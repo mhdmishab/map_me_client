@@ -10,7 +10,7 @@ function Login() {
 
     const user = {
         email: "",
-        password:""
+        password: ""
     }
 
     const validationSchema = Yup.object().shape({
@@ -18,7 +18,7 @@ function Login() {
             .trim()
             .email('This is not a valid email.')
             .required('This field is required!'),
-            password: Yup.string()
+        password: Yup.string()
             .min(8, 'Password must be at least 8 characters long.')
             .max(20, 'Password must not exceed 20 characters.')
             .matches(/[a-z]/, 'Password must contain at least one lowercase letter.')
@@ -32,15 +32,16 @@ function Login() {
         console.log(values.email);
         console.log(values.password)
         const email = values.email;
-        const password=values.password
+        const password = values.password
         try {
-            const response = await axios.post("/auth/login", { email,password });
+            const response = await axios.post("/auth/login", { email, password });
             console.log(response.data);
-            
-            const { token, message } = response.data;
+
+            const { token, message, userId } = response.data;
             if (token) {
                 localStorage.clear();
-                localStorage.setItem("token", token);
+                localStorage.setItem('token', token);
+                localStorage.setItem('userId', userId);
                 navigate('/map');
             } else {
                 message.error(response.data.message);

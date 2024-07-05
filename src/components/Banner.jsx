@@ -25,13 +25,6 @@ const Banner = () => {
                             </p>
                         </div>
                         <div className="mb-4 md:mb-0 space-y-4 md:space-y-0 md:space-x-4 flex flex-col md:flex-row">
-                            <Link to="/search" >  <button
-                                type="button"
-                                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition w-full md:w-auto"
-                            >
-                                Explore
-                            </button>
-                            </Link>
                         </div>
                     </div>
                 </div>

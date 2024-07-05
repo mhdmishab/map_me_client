@@ -19,15 +19,19 @@ instance.interceptors.request.use(
   }
 );
 
-// Add a response interceptor
 instance.interceptors.response.use(
   (response) => {
-    // If the response is successful, just return it
+    
     return response;
   },
   (error) => {
     if (error.response && error.response.status === 403) {
-     
+      const email = error.response.data.email || error.response.config.data.email;
+      console.log(email)
+      localStorage.clear();
+      if (email) {
+        localStorage.setItem('email', email);
+      }
       window.location.href = '/verifyemail';
     }
     return Promise.reject(error);
