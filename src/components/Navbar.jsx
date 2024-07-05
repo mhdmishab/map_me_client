@@ -1,17 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { adminLogin } from "../slices/adminSlice";
-// import { useDispatch, useSelector } from "react-redux";
-// import { getAccessToken } from "../utils/token";
-
-
+import React from "react";
+import { Link, useLocation} from "react-router-dom";
 
 const NavBar = () => {
     
-    const navigate = useNavigate();
-    // const dispatch = useDispatch();
-    // const accessToken = getAccessToken();
-    // const { user } = useSelector(state => state.admin);
     const location = useLocation();
 
     return (
