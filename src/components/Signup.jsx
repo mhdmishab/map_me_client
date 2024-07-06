@@ -60,6 +60,7 @@ function Signup() {
             }
         } catch (error) {
             console.error(error);
+            setLoading(false)
             if (error.response && error.response.status === 403) {
                 const email = error.response.data.email || error.response.config.data.email;
                 console.log(email)
