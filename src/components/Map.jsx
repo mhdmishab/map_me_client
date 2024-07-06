@@ -124,7 +124,7 @@ const Map = () => {
                     <h3 className="mb-2">Search History:</h3>
                     <ul className="list-none p-0">
                         {searchHistory.map((item) => (
-                            <li key={item._id} className="flex justify-between items-center py-2 border-b border-gray-300" onClick={() => handleHistoryClick(item.placeName)}>
+                            <li key={item._id} className="flex justify-between items-center py-2 border-b border-gray-300 pointer" onClick={() => handleHistoryClick(item.placeName)}>
                                 {item.placeName}
                                 <button className="px-3 py-1 bg-red-600 text-white rounded transition duration-300 hover:bg-red-800" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item); }}>
                                     x
