@@ -38,7 +38,7 @@ function Login() {
             setLoading(true);
             const response = await axios.post("/auth/login", { email, password });
             setLoading(false);
-            console.log(response.data);
+            console.log(response);
 
             const { token, message, userId } = response.data;
             if (token) {
@@ -51,6 +51,16 @@ function Login() {
             }
         } catch (error) {
             console.error(error);
+            if (error.response && error.response.status === 403) {
+                const email = error.response.data.email || error.response.config.data.email;
+                console.log(email)
+                localStorage.clear();
+                if (email) {
+                    localStorage.setItem('email', email);
+                }
+
+                navigate('/verifyemail')
+            }
             message.error(error.response.data.message || "An error occurred during login.");
         }
     };

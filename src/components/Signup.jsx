@@ -8,8 +8,8 @@ import { message } from 'antd';
 
 function Signup() {
     const navigate = useNavigate();
-    const [loading,setLoading] = useState(false);
-    
+    const [loading, setLoading] = useState(false);
+
     const initialValues = {
         username: "",
         email: "",
@@ -47,7 +47,7 @@ function Signup() {
             setLoading(true);
             const response = await axios.post("/auth/register", values);
             setLoading(false)
-            console.log(response.data);
+            console.log(response);
             message.success(response.data.message)
             const { token, message } = response.data;
             if (token) {
@@ -60,6 +60,16 @@ function Signup() {
             }
         } catch (error) {
             console.error(error);
+            if (error.response && error.response.status === 403) {
+                const email = error.response.data.email || error.response.config.data.email;
+                console.log(email)
+                localStorage.clear();
+                if (email) {
+                    localStorage.setItem('email', email);
+                }
+
+                navigate('/verifyemail')
+            }
             message.error(error.response.data.message || "An error occurred during login.");
         }
     };
@@ -126,7 +136,7 @@ function Signup() {
                         />
                     </div>
                     <button className='w-full my-5 py-5 bg-blue-500 px-6 hover:bg-blue-600 text-white font-semibold rounded-lg' type='submit'>
-                        {loading?"....":"Register"}
+                        {loading ? "...." : "Register"}
                     </button>
                     <Link to={'/login'} className='flex justify-end'>Already have an account?</Link>
                 </Form>
