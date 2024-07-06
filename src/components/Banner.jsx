@@ -4,9 +4,10 @@ const Banner = () => {
         <div>
             <div>
                 <div className="flex flex-col md:flex-row">
-                    <div className="flex-1 md:w-1/2">
+                    <div className="flex-1 md:w-1/2 h-[630px]">
                         <img src="https://cdn3d.iconscout.com/3d/premium/thumb/online-map-5739626-4817109.png?f=webp" alt="tinywiki" className="h-full w-full object-cover" />
                     </div>
+
                     <div className="flex-1 p-10 flex flex-col justify-center items-center md:items-start md:w-1/2">
                         <div className="mb-8 text-center md:text-left">
                             <h1 className="text-4xl font-semibold font-serif mb-4">

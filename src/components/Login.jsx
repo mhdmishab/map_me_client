@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -7,6 +7,7 @@ import { message } from 'antd';
 
 function Login() {
     const navigate = useNavigate();
+    const [loading,setLoading] = useState(false);
 
     const user = {
         email: "",
@@ -34,7 +35,9 @@ function Login() {
         const email = values.email;
         const password = values.password
         try {
+            setLoading(true);
             const response = await axios.post("/auth/login", { email, password });
+            setLoading(false);
             console.log(response.data);
 
             const { token, message, userId } = response.data;
@@ -59,7 +62,7 @@ function Login() {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                <Form className='p-8 px-8 rounded-lg'>
+                <Form className='md:p-20 md:px-20  p-14 px-14 rounded-lg'>
                     <h2 className='text-4xl dark:text-gray-800 font-bold text-center m-4'>Login</h2>
                     <div className='flex flex-col py-2'>
                         <label className='text-gray-800'>Email</label>
@@ -88,7 +91,7 @@ function Login() {
                         />
                     </div>
                     <button className='w-full my-5 py-5 bg-blue-500 px-6 hover:bg-blue-600 text-white font-semibold rounded-lg' type='submit'>
-                        Login
+                        {loading?".....":"Login"}
                     </button>
                     <Link to={'/signup'} className='flex justify-end'>Need a account?</Link>
                 </Form>

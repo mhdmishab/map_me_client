@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import './Map.css';
 import axios from '../api/Axios';
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
@@ -11,6 +10,8 @@ const Map = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchHistory, setSearchHistory] = useState([]);
     const [location, setLocation] = useState(null);
+    const [showHistory, setShowHistory] = useState(false);
+    const [loading, setLoading] = useState(false); 
 
     const handleLogout = () => {
         localStorage.clear();
@@ -35,7 +36,11 @@ const Map = () => {
 
     const handleSearch = async (e) => {
         e.preventDefault();
+        if (searchTerm.trim() === '') return;
+
+        setLoading(true); 
         await performSearch(searchTerm);
+        setLoading(false); 
         setSearchTerm('');
     };
 
@@ -44,10 +49,15 @@ const Map = () => {
     };
 
     const performSearch = async (term) => {
+        setShowHistory(false);
         try {
             const userId = localStorage.getItem('userId');
             if (!userId) return;
+
+            setLoading(true); 
             const response = await axios.get(`/user/search?query=${term}&userId=${userId}`);
+            setLoading(false); 
+
             const data = response.data;
 
             if (data.location) {
@@ -70,7 +80,9 @@ const Map = () => {
         const userId = localStorage.getItem('userId');
         if (!userId) return;
         try {
+            setLoading(true);
             await axios.delete(`/user/search-history/${item.placeName}?userId=${userId}`);
+            setLoading(false);
             setSearchHistory(prevHistory => prevHistory.filter(term => term._id !== item._id));
         } catch (error) {
             console.error('Error deleting search history item:', error);
@@ -82,66 +94,76 @@ const Map = () => {
         const map = useMap();
         useEffect(() => {
             map.setView(center);
-            setLocation(null)
+            setLocation(null);
         }, [center, map]);
         return null;
     };
 
     return (
-        <div className="map-container">
-            <form onSubmit={handleSearch} className="search-form">
+        <div className="p-5 font-sans relative h-screen">
+            <form onSubmit={handleSearch} className="flex items-center mb-5 relative z-20 px-8">
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    onFocus={() => setShowHistory(true)}
+                    onBlur={() => setTimeout(() => setShowHistory(false), 200)}
                     placeholder="Search location"
-                    className="search-input"
+                    className="flex-1 p-2 mr-2 border border-gray-300 rounded"
                 />
-                <button type="submit" className="search-button">Search</button>
-                <button type="button" className="m-2 bg-red-600 rounded-md p-2" onClick={handleLogout}>Logout</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded transition duration-300 hover:bg-blue-800">
+                    {loading ? '.....' : 'Search'}
+                </button>
+                <button type="button" className="m-2 bg-red-600 rounded-md p-2 text-white" onClick={handleLogout}>
+                    Logout
+                </button>
             </form>
 
-            {searchHistory.length > 0 && (
-                <div className="search-history">
-                    <h3>Search History:</h3>
-                    <ul>
+            {showHistory && searchHistory.length > 0 && (
+                <div className="absolute mx-16 top-20 left-0 right-0 bg-white bg-opacity-60 z-10 max-h-60 overflow-y-auto p-4 rounded">
+                    <h3 className="mb-2">Search History:</h3>
+                    <ul className="list-none p-0">
                         {searchHistory.map((item) => (
-                            <li key={item._id} onClick={() => handleHistoryClick(item.placeName)}>
+                            <li key={item._id} className="flex justify-between items-center py-2 border-b border-gray-300" onClick={() => handleHistoryClick(item.placeName)}>
                                 {item.placeName}
-                                <button className="delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item); }}>Delete</button>
+                                <button className="px-3 py-1 bg-red-600 text-white rounded transition duration-300 hover:bg-red-800" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item); }}>
+                                    x
+                                </button>
                             </li>
                         ))}
                     </ul>
                 </div>
             )}
 
-            <MapContainer center={[51.505, -0.09]} zoom={11} style={{ height: '600px', width: '100%' }}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {searchHistory.length > 0 && searchHistory.map((item) => (
-                    <Marker key={item._id} position={[item.lat, item.lon]}>
-                        <Popup>
-                            {item.placeName}<br />
-                            Latitude: {item.lat}<br />
-                            Longitude: {item.lon}
-                        </Popup>
-                    </Marker>
-                ))}
-                {location && (
-                    <>
-                        <UpdateMapView center={[location.latitude, location.longitude]} />
-                        <Marker position={[location.latitude, location.longitude]}>
+            <div className="absolute top-0 left-0 right-0 bottom-0 z-0">
+                <MapContainer center={[51.505, -0.09]} zoom={11} style={{ height: '100%', width: '100%' }}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    {searchHistory.length > 0 && searchHistory.map((item) => (
+                        <Marker key={item._id} position={[item.lat, item.lon]}>
                             <Popup>
-                                {location.placeName}<br />
-                                Latitude: {location.latitude}<br />
-                                Longitude: {location.longitude}
+                                {item.placeName}<br />
+                                Latitude: {item.lat}<br />
+                                Longitude: {item.lon}
                             </Popup>
                         </Marker>
-                    </>
-                )}
-            </MapContainer>
+                    ))}
+                    {location && (
+                        <>
+                            <UpdateMapView center={[location.latitude, location.longitude]} />
+                            <Marker position={[location.latitude, location.longitude]}>
+                                <Popup>
+                                    {location.placeName}<br />
+                                    Latitude: {location.latitude}<br />
+                                    Longitude: {location.longitude}
+                                </Popup>
+                            </Marker>
+                        </>
+                    )}
+                </MapContainer>
+            </div>
         </div>
     );
 };

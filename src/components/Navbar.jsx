@@ -1,8 +1,8 @@
 import React from "react";
-import { Link, useLocation} from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const NavBar = () => {
-    
+
     const location = useLocation();
 
     return (
@@ -16,12 +16,14 @@ const NavBar = () => {
                         </span>
                     </Link>
                     <div className="flex md:order-2">
-                        <button
-                            type="button"
-                            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition w-full md:w-auto"
-                        >
-                            {(location.pathname=="/login")?<Link to={"/"}>Home</Link>:<Link to={"/login"}>Login</Link>}
-                        </button>
+                        <Link to={location.pathname === "/login" ? "/" : "/login"}>
+                            <button
+                                type="button"
+                                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition w-full md:w-auto"
+                            >
+                                {location.pathname === "/login" ? "Home" : "Login"}
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </nav>

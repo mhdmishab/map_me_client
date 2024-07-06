@@ -8,6 +8,7 @@ import { message } from 'antd';
 
 function Signup() {
     const navigate = useNavigate();
+    const [loading,setLoading] = useState(false);
     
     const initialValues = {
         username: "",
@@ -43,7 +44,9 @@ function Signup() {
         console.log(values.password);
 
         try {
+            setLoading(true);
             const response = await axios.post("/auth/register", values);
+            setLoading(false)
             console.log(response.data);
             message.success(response.data.message)
             const { token, message } = response.data;
@@ -68,7 +71,7 @@ function Signup() {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                <Form className='p-8 px-8 rounded-lg'>
+                <Form className='md:px-20 p-8 px-14 rounded-lg'>
                     <h2 className='text-4xl dark:text-gray-800 font-bold text-center m-4'>Register</h2>
                     <div className='flex flex-col py-2'>
                         <label className='text-gray-800'>Username</label>
@@ -123,7 +126,7 @@ function Signup() {
                         />
                     </div>
                     <button className='w-full my-5 py-5 bg-blue-500 px-6 hover:bg-blue-600 text-white font-semibold rounded-lg' type='submit'>
-                        Register
+                        {loading?"....":"Register"}
                     </button>
                     <Link to={'/login'} className='flex justify-end'>Already have an account?</Link>
                 </Form>
